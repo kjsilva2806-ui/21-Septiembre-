@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Nacho 🌻</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fff9e6 0%, #ffeedd 50%, #fef3c7 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .font-handwriting {
+            font-family: 'Dancing Script', cursive;
+        }
+
+        /* Envelope Styles */
+        .envelope-wrapper {
+            perspective: 1000px;
+        }
+
+        .envelope {
+            position: relative;
+            width: 320px;
+            height: 220px;
+            background-color: #f59e0b;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            box-shadow: 0 15px 35px rgba(217, 119, 6, 0.25), 0 5px 15px rgba(0,0,0,0.07);
+            cursor: pointer;
+            transition: transform 0.4s ease;
+        }
+
+        .envelope:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Envelope Flap Top */
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-top: 125px solid #d97706;
+            transform-origin: top;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 4;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        /* Envelope Pocket Sides */
+        .envelope-pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 160px solid #fbbf24;
+            border-right: 160px solid #fbbf24;
+            border-bottom: 110px solid #f59e0b;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            z-index: 3;
+        }
+
+        /* Letter Card Inside */
+        .letter {
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            width: 290px;
+            height: 190px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.6s ease;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 2px dashed #f59e0b;
+        }
+
+        /* Opened State Styles */
+        .open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .open .letter {
+            transform: translateY(-160px) scale(1.08);
+            z-index: 5;
+            box-shadow: 0 20px 30px rgba(0,0,0,0.15);
+        }
+
+        /* Falling Flower Animation */
+        .flower {
+            position: fixed;
+            top: -50px;
+            pointer-events: none;
+            z-index: 50;
+            animation: fall linear forwards;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(0.8);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(105vh) rotate(360deg) scale(1.2);
+                opacity: 0.2;
+            }
+        }
+
+        /* Down-sliding Te Amo Banner */
+        .banner-down {
+            transform: translateY(-200%);
+            transition: transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.27);
+        }
+
+        .banner-down.show {
+            transform: translateY(0);
+        }
+
+        /* Button Pulse Accent */
+        @keyframes subtle-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .btn-pulse {
+            animation: subtle-pulse 2s infinite;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen relative p-4 select-none">
+
+    <div id="loveBanner" class="banner-down fixed top-6 z-40 w-11/12 max-w-md bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-amber-950 px-8 py-4 rounded-full shadow-2xl border-4 border-white text-center">
+        <h1 class="font-handwriting text-4xl sm:text-5xl font-bold tracking-wide drop-shadow-sm flex items-center justify-center gap-3">
+            <span>✨</span> Te amo mucho <span>❤️</span>
+        </h1>
+    </div>
+
+    <div class="flex flex-col items-center justify-center gap-8 mt-12 mb-6">
+        
+        <!-- Interactive Envelope Container -->
+        <div id="envelopeWrapper" class="envelope-wrapper">
+            <div id="envelope" class="envelope flex flex-col justify-end items-center">
+                
+                <!-- Flap (Top triangle) -->
+                <div class="envelope-flap"></div>
+
+                <!-- Envelope Front Tag/Name -->
+                <div id="envelopeLabel" class="z-10 mb-12 text-center bg-white/90 backdrop-blur-sm px-6 py-2 rounded-full shadow-md border border-amber-200 transition-opacity duration-500">
+                    <span class="text-xs uppercase tracking-widest text-amber-700 font-semibold block">Especialmente</span>
+                    <span class="font-handwriting text-3xl font-bold text-amber-900">Para Nacho</span>
+                </div>
+
+                <!-- Envelope Pocket Overlay -->
+                <div class="envelope-pocket"></div>
+
+                <!-- Hidden Letter Card -->
+                <div id="letter" class="letter">
+                    <div class="text-amber-500 text-2xl mb-1">🌻</div>
+                    <h2 class="text-lg sm:text-xl font-bold text-amber-900 leading-snug">
+                        ¡Feliz 21 de septiembre!
+                    </h2>
+                    <p class="text-xs sm:text-sm text-amber-800 mt-2 font-medium">
+                        Acá vienen tus flores amarillas ✨💛
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="z-30 mt-4">
+            <button id="openBtn" onclick="openEnvelope()" class="btn-pulse bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold text-lg px-8 py-3.5 rounded-full shadow-xl hover:shadow-amber-500/30 transition-all duration-300 flex items-center gap-3 active:scale-95">
+                <i class="fa-solid fa-envelope-open-text"></i>
+                <span>Click aquí</span>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Audio Effect (Subtle chime) using Web Audio API -->
+    <script>
+        let isOpened = false;
+
+        // Sound Synthesizer using Web Audio API (No external assets required)
+        function playChime() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                notes.forEach((freq, index) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    
+                    gain.gain.setValueAtTime(0.1, ctx.currentTime + index * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + index * 0.1 + 0.6);
+                    
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    
+                    osc.start(ctx.currentTime + index * 0.1);
+                    osc.stop(ctx.currentTime + index * 0.1 + 0.6);
+                });
+            } catch (e) {
+                console.log("Audio not supported or blocked");
+            }
+        }
+
+        // Main function triggered when clicking button or envelope
+        function openEnvelope() {
+            if (isOpened) return;
+            isOpened = true;
+
+            // 1. Sound & Envelope Open Animation
+            playChime();
+            const envelope = document.getElementById('envelope');
+            const openBtn = document.getElementById('openBtn');
+            const envelopeLabel = document.getElementById('envelopeLabel');
+
+            envelope.classList.add('open');
+            envelopeLabel.style.opacity = '0';
+            
+            // Disable button
+            openBtn.classList.remove('btn-pulse');
+            openBtn.classList.add('opacity-0', 'pointer-events-none', 'scale-90');
+            setTimeout(() => openBtn.remove(), 400);
+
+            // 2. Trigger Flower Rain & Banner Display
+            setTimeout(() => {
+                startFlowerRain();
+                showLoveBanner();
+            }, 600);
+        }
+
+        // Add Click listener on Envelope too for convenience
+        document.getElementById('envelope').addEventListener('click', openEnvelope);
+
+        // Function to reveal the top banner
+        function showLoveBanner() {
+            const banner = document.getElementById('loveBanner');
+            banner.classList.add('show');
+        }
+
+        // Flower Rain Generator
+        function startFlowerRain() {
+            const flowerTypes = ['🌻', '🌼', '💛', '✨', '🌸', '🏵️'];
+            
+            // Initial burst
+            for (let i = 0; i < 35; i++) {
+                setTimeout(createFlower, i * 80);
+            }
+
+            // Continuous gentle rain
+            setInterval(() => {
+                createFlower();
+            }, 250);
+        }
+
+        function createFlower() {
+            const flowerTypes = ['🌻', '🌻', '🌻', '🌼', '💛', '✨'];
+            const flower = document.createElement('div');
+            
+            // Random attributes
+            const symbol = flowerTypes[Math.floor(Math.random() * flowerTypes.length)];
+            const left = Math.random() * 100; // Screen percentage position
+            const duration = 3 + Math.random() * 4; // Fall duration (3-7s)
+            const size = 1.2 + Math.random() * 1.5; // Font size (rem)
+            
+            flower.className = 'flower';
+            flower.innerText = symbol;
+            flower.style.left = `${left}vw`;
+            flower.style.animationDuration = `${duration}s`;
+            flower.style.fontSize = `${size}rem`;
+
+            document.body.appendChild(flower);
+
+            // Cleanup DOM after animation ends
+            setTimeout(() => {
+                flower.remove();
+            }, duration * 1000);
+        }
+    </script>
+</body>
+</html>
